@@ -9,9 +9,9 @@ print("total marks=",total)
 print("percentage=",percentage)
 if percentage>=75:
     print("Reslt is: distinction")
-elif percentage>=60:
-    print("Result is:First clss")
+elif percentage>=60: 
+    print("Result is:First clss ")
 elif percentage>=45:
-    print("Result is: pass")
+    print("Result is: pass") 
 else:
     print("Result is:Fail") 
