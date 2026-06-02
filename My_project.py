@@ -1,4 +1,3 @@
-
 # Main  Dictionary 
 hostel_info = {
     "hostel_name": "Sunrise Boys Hostel",
