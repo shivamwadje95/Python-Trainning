@@ -1,0 +1,83 @@
+body {
+    font-family: "Times New Roman", Times, serif;
+    margin: 20px;
+    background-color: white;
+}
+
+h2 {
+    margin-bottom: 5px;
+}
+
+hr {
+    border: 1px solid #ccc;
+    margin: 10px 0;
+}
+
+.nav-links {
+    margin: 10px 0;
+}
+
+.nav-links a {
+    color: blue;
+    text-decoration: underline;
+    margin: 0 5px;
+}
+
+.nav-links a:hover {
+    color: red;
+}
+
+.container {
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f0f0f0;
+}
+
+.btn {
+    background-color: #e0e0e0;
+    border: 1px solid #999;
+    padding: 5px 10px;
+    text-decoration: none;
+    color: black;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+.form-group input {
+    padding: 4px;
+    border: 1px solid #999;
+}
+
+.card {
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #f9f9f9;
+}

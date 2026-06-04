@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if visitor %}
+    <h2>Visitor Details: {{ visitor.name }}</h2>
+    <div class="card">
+        <p><strong>Visitor ID:</strong> {{ visitor.id }}</p>
+        <p><strong>Student Visited:</strong> {{ visitor.student }}</p>
+        <p><strong>Room Number:</strong> {{ visitor.room }}</p>
+        <p><strong>Entry Time:</strong> {{ visitor.in_time }}</p>
+        <p><strong>Purpose:</strong> {{ visitor.purpose }}</p>
+    </div>
+{% else %}
+    <p>Visitor record not found</p>
+{% endif %}
+<a href="{{ url_for('records') }}" class="btn">Back to All Records</a>
+{% endblock %}

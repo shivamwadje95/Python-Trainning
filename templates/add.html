@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Log New Visitor</h2>
+<form>
+    <div class="form-group">
+        <label>Visitor Name</label>
+        <input type="text" name="name">
+    </div>
+    <div class="form-group">
+        <label>Student to Visit</label>
+        <input type="text" name="student">
+    </div>
+    <div class="form-group">
+        <label>Room No</label>
+        <input type="text" name="room">
+    </div>
+    <div class="form-group">
+        <label>In Time</label>
+        <input type="text" name="in_time" placeholder="e.g. 03:30 PM">
+    </div>
+    <div class="form-group">
+        <label>Purpose</label>
+        <input type="text" name="purpose">
+    </div>
+    <button type="submit" class="btn">Add to Log</button>
+    <p><small>Note: Form doesn't submit yet</small></p>
+</form>
+{% endblock %}

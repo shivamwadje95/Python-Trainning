@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>About {{ project_name }}</h2>
+<div class="card">
+    <p>The hostel visitor log system allows hostel authorities to record essential visitor
+     details including visitor name, student being visited, room number, entry time, and purpose of visit.</p>
+    <p><strong>Features:</strong></p>
+    <ol>
+        <li>Digital record of all visitors</li>
+        <li>Track student, room, time, and purpose</li>
+        <li>Easy navigation with Flask routing</li>
+        <li>Plain HTML and CSS</li>
+    </ol>
+
+</div>
+<a href="{{ url_for('home') }}" class="btn">Back to Home</a>
+{% endblock %}

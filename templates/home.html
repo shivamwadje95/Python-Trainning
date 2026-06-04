@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Hostel Visitor Management System</h1>
+    <p>Track and manage all hostel visitors in one place. Ensures security and keeps a digital log of entries.</p>
+    
+    <div class="home-links">
+        <h3>Quick Links:</h3>
+        <a href="{{ url_for('records') }}" class="btn">View All Records</a>
+        <a href="{{ url_for('add_visitor') }}" class="btn">Add New Visitor</a>
+        <a href="{{ url_for('about') }}" class="btn">About Project</a>
+    </div>
+{% endblock %}

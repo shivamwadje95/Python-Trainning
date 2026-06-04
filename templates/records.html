@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Today's Visitor Records</h2>
+    <a href="{{ url_for('add_visitor') }}" class="btn">+ Add New Visitor</a>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Visitor Name</th>
+                <th>Visiting Student</th>
+                <th>Room No</th>
+                <th>In Time</th>
+                <th>Purpose</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for visitor in visitors %}
+            <tr>
+                <td>{{ visitor.id }}</td>
+                <td><a href="{{ url_for('visitor_detail', id=visitor.id) }}">{{ visitor.name }}</a></td>
+                <td>{{ visitor.student }}</td>
+                <td>{{ visitor.room }}</td>
+                <td>{{ visitor.in_time }}</td>
+                <td>{{ visitor.purpose }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
