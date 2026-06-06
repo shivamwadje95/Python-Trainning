@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}List View - Hostel Visitor Log{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Visitor List View</h2>
+
+<div class="list-group">
+    {% for v in visitors %}
+    <div class="list-group-item list-group-item-action">
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">{{ v.visitor }} 
+                {% if v.status == "Inside" %}
+                    <span class="badge bg-success">Inside</span>
+                {% else %}
+                    <span class="badge bg-secondary">Left</span>
+                {% endif %}
+            </h5>
+            <small>Room: <span class="badge bg-primary">{{ v.room }}</span></small>
+        </div>
+        <p class="mb-1">Visiting: {{ v.student }} | Purpose: {{ v.purpose }}</p>
+        <small>In: {{ v.in_time }} | Out: {{ v.out_time }} | 
+            <a href="{{ url_for('record_detail', id=v.id) }}">View Full Details</a>
+        </small>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

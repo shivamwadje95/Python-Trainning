@@ -1,17 +1,60 @@
 {% extends "base.html" %}
 
+{% block title %}Visitor Details - Hostel Visitor Log{% endblock %}
+
 {% block content %}
-{% if visitor %}
-    <h2>Visitor Details: {{ visitor.name }}</h2>
-    <div class="card">
-        <p><strong>Visitor ID:</strong> {{ visitor.id }}</p>
-        <p><strong>Student Visited:</strong> {{ visitor.student }}</p>
-        <p><strong>Room Number:</strong> {{ visitor.room }}</p>
-        <p><strong>Entry Time:</strong> {{ visitor.in_time }}</p>
-        <p><strong>Purpose:</strong> {{ visitor.purpose }}</p>
+<div class="row">
+    <div class="col-lg-6 mx-auto">
+        <h2 class="mb-4">Visitor Details</h2>
+        
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">Record #{{ visitor.id }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>Visitor:</strong></div>
+                    <div class="col-sm-8">{{ visitor.visitor }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>Student:</strong></div>
+                    <div class="col-sm-8">{{ visitor.student }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>Room:</strong></div>
+                    <div class="col-sm-8"><span class="badge bg-primary">{{ visitor.room }}</span></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>Purpose:</strong></div>
+                    <div class="col-sm-8">{{ visitor.purpose }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>Phone:</strong></div>
+                    <div class="col-sm-8">{{ visitor.phone }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>Check In:</strong></div>
+                    <div class="col-sm-8">{{ visitor.in_time }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>Check Out:</strong></div>
+                    <div class="col-sm-8">{{ visitor.out_time }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4"><strong>Status:</strong></div>
+                    <div class="col-sm-8">
+                        {% if visitor.status == "Inside" %}
+                            <span class="badge bg-success">{{ visitor.status }}</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ visitor.status }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('records') }}" class="btn btn-secondary">← Back to Records</a>
+            </div>
+        </div>
     </div>
-{% else %}
-    <p>Visitor record not found</p>
-{% endif %}
-<a href="{{ url_for('records') }}" class="btn">Back to All Records</a>
+</div>
 {% endblock %}
