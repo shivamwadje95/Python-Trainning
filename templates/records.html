@@ -1,28 +1,12 @@
-{% extends "base.html" %}
-
-{% block title %}Records - Hostel Visitor Log{% endblock %}
+{% extends 'base.html' %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2><i class="bi bi-table"></i> Visitor Records</h2>
-    <a href="{{ url_for('add') }}" class="btn btn-dark">
-        <i class="bi bi-plus-lg"></i> Add New
-    </a>
+    <a href="/add" class="btn btn-dark"><i class="bi bi-plus-lg"></i> Add New</a>
 </div>
 
-<!-- Flash messages - success alert for assignment -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                <i class="bi bi-check-circle-fill"></i> {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
-
-<table class="table table-striped table-hover">
+<table class="table table-hover table-bordered shadow-sm">
     <thead class="table-dark">
         <tr>
             <th>#</th>
@@ -35,21 +19,15 @@
         </tr>
     </thead>
     <tbody>
-        {% for v in visitors %}
+        {% for visitor in visitors %}
         <tr>
-            <td>{{ loop.index }}</td>
-            <td>{{ v.visitor }}</td>
-            <td>{{ v.student }}</td>
-            <td><span class="badge bg-primary">{{ v.room }}</span></td>
-            <td>{{ v.in_time }}</td>
-            <td>{{ v.out_time }}</td>
-            <td>
-                {% if v.status == "Inside" %}
-                    <span class="badge bg-success">Inside</span>
-                {% else %}
-                    <span class="badge bg-secondary">Left</span>
-                {% endif %}
-            </td>
+            <td>{{ visitor.id }}</td>
+            <td>{{ visitor.visitor_name }}</td>
+            <td>{{ visitor.student_name }}</td>
+            <td><span class="badge bg-primary">{{ visitor.room_number }}</span></td>
+            <td>{{ visitor.check_in }}</td>
+            <td>Still Inside</td>
+            <td><span class="badge bg-success">{{ visitor.status }}</span></td>
         </tr>
         {% endfor %}
     </tbody>

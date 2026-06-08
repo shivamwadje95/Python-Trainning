@@ -1,51 +1,76 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from datetime import datetime
+import sqlite3
 
 app = Flask(__name__)
 app.secret_key = 'hostel-visitor-secret-key'
 
-visitors = []
+def get_db():
+    conn = sqlite3.connect('hostel.db')
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def init_db():
+    conn = get_db()
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS
+        visitors (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            visitor_name TEXT NOT NULL,
+            student_name TEXT NOT NULL,
+            room_number TEXT NOT NULL,
+            purpose TEXT NOT NULL,
+            check_in TEXT NOT NULL,
+            status TEXT DEFAULT 'Inside'
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+init_db()
 
 @app.route('/')
 def home():
-    total = len(visitors)
-    inside = len([v for v in visitors if v['status'] == 'Inside'])
+    conn = get_db()
+    today = datetime.now().strftime("%Y-%m-%d")
+    total = conn.execute("SELECT COUNT(*) FROM visitors WHERE check_in LIKE?", (today+'%',)).fetchone()[0]
+    inside = conn.execute("SELECT COUNT(*) FROM visitors WHERE status = 'Inside'").fetchone()[0]
+    conn.close()
     return render_template('home.html', total=total, inside=inside)
 
 @app.route('/records')
 def records():
+    conn = get_db()
+    visitors = conn.execute('SELECT * FROM visitors ORDER BY id ASC').fetchall()
+    conn.close()
     return render_template('records.html', visitors=visitors)
 
 @app.route('/add', methods=['GET', 'POST'])
 def add():
     if request.method == 'POST':
-        visitor_name = request.form.get('visitor_name')
-        student_name = request.form.get('student_name')
-        room_number = request.form.get('room_number')
-        purpose = request.form.get('purpose')
+        visitor_name = request.form['visitor_name']
+        student_name = request.form['student_name']
+        room_number = request.form['room_number']
+        purpose = request.form['purpose']
         
-        # Validation - empty check for assignment
         if not visitor_name or not student_name or not room_number or not purpose:
             flash('All fields are required!', 'danger')
-            return redirect(url_for('add'))
+            return render_template('add.html')
         
-        new_entry = {
-            'id': len(visitors) + 1,
-            'visitor': visitor_name,
-            'student': student_name,
-            'room': room_number,
-            'purpose': purpose,
-            'in_time': datetime.now().strftime('%I:%M %p'),
-            'out_time': 'Still Inside',
-            'status': 'Inside'
-        }
-        visitors.append(new_entry)
-        flash('Visitor added successfully!', 'success')  # Flash message
-        return redirect(url_for('records'))  # Redirect after submit
+        conn = get_db()
+        conn.execute(
+            'INSERT INTO visitors (visitor_name, student_name, room_number, purpose, check_in) VALUES (?,?,?,?,?)',
+            (visitor_name, student_name, room_number, purpose, datetime.now().strftime("%Y-%m-%d %H:%M"))
+        )
+        conn.commit()
+        conn.close()
+        
+        flash('Visitor added successfully!', 'success')
+        return redirect(url_for('records'))
     
     return render_template('add.html')
 
-@app.route('/about')  # THIS IS MISSING - ADD IT
+@app.route('/about')
 def about():
     return render_template('about.html')
 

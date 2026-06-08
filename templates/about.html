@@ -1,24 +1,28 @@
-{% extends "base.html" %}
-
-{% block title %}About - Hostel Visitor Log{% endblock %}
+{% extends 'base.html' %}
 
 {% block content %}
-<div class="card shadow-sm">
-    <div class="card-body">
-        <h2 class="mb-3"><i class="bi bi-info-circle-fill"></i> About Project</h2>
-        <p class="lead">Hostel Visitor Log System</p>
-        <p>This is a Flask-based web application to manage and track visitors in a hostel.</p>
-        <h5 class="mt-4">Features:</h5>
-        <ul>
-            <li>Dashboard with visitor statistics</li>
-            <li>Add new visitor entries with validation</li>
-            <li>View all records in Bootstrap table</li>
-            <li>Flash messages for success/error alerts</li>
-        </ul>
-        <p class="mt-3"><strong>Tech Stack:</strong> Flask, Python, Bootstrap 5, HTML5</p>
-        <a href="{{ url_for('home') }}" class="btn btn-dark mt-3">
-            <i class="bi bi-house-door"></i> Back to Dashboard
-        </a>
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2><i class="bi bi-info-circle"></i> About Project</h2>
+                <h5 class="text-muted">Hostel Visitor Log System</h5>
+                <p>This is a Flask-based web application to manage and track visitors in a hostel.</p>
+                
+                <h5 class="mt-4">Features:</h5>
+                <ul>
+                    <li>Dashboard with visitor statistics</li>
+                    <li>Add new visitor entries with validation</li>
+                    <li>View all records in Bootstrap table</li>
+                    <li>Flash messages for success/error alerts</li>
+                </ul>
+
+                <h5 class="mt-4">Tech Stack:</h5>
+                <p><strong>Flask, Python, Bootstrap 5, HTML5</strong></p>
+
+                <a href="/" class="btn btn-dark mt-3"><i class="bi bi-house"></i> Back to Dashboard</a>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

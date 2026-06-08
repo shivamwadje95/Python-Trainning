@@ -1,55 +1,29 @@
-{% extends "base.html" %}
-
-{% block title %}Add Visitor{% endblock %}
+{% extends 'base.html' %}
 
 {% block content %}
-<div class="row">
-    <div class="col-lg-6 mx-auto">
-        <h2 class="mb-4"><i class="bi bi-person-plus-fill"></i> Add New Visitor</h2>
-
-        <!-- Flash message display -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show">
-                        <i class="bi bi-exclamation-triangle-fill"></i> {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
+<h2 class="mb-4"><i class="bi bi-person-plus"></i> Add New Visitor</h2>
+<div class="row justify-content-center">
+    <div class="col-md-6">
         <div class="card shadow-sm">
             <div class="card-body">
                 <form method="POST">
-                    <!-- Field 1 -->
                     <div class="mb-3">
                         <label class="form-label">Visitor Name</label>
                         <input type="text" class="form-control" name="visitor_name" required>
                     </div>
-                    <!-- Field 2 -->
                     <div class="mb-3">
                         <label class="form-label">Student to Visit</label>
                         <input type="text" class="form-control" name="student_name" required>
                     </div>
-                    <!-- Field 3 -->
                     <div class="mb-3">
                         <label class="form-label">Room Number</label>
                         <input type="text" class="form-control" name="room_number" required>
                     </div>
-                    <!-- Field 4 -->
                     <div class="mb-3">
                         <label class="form-label">Purpose</label>
-                        <select class="form-control" name="purpose" required>
-                            <option value="">Select purpose</option>
-                            <option value="Meeting Friend">Meeting Friend</option>
-                            <option value="Family Visit">Family Visit</option>
-                            <option value="Delivery">Delivery</option>
-                        </select>
+                        <input type="text" class="form-control" name="purpose" required>
                     </div>
-                    <button type="submit" class="btn btn-dark w-100">
-                        <i class="bi bi-save"></i> Submit Entry
-                    </button>
+                    <button type="submit" class="btn btn-dark w-100"><i class="bi bi-check-square"></i> Submit Entry</button>
                 </form>
             </div>
         </div>
