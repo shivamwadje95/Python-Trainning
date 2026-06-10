@@ -1,33 +1,83 @@
 {% extends 'base.html' %}
 
+{% block title %}All Records{% endblock %}
+
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2><i class="bi bi-table"></i> Visitor Records</h2>
-    <a href="/add" class="btn btn-dark"><i class="bi bi-plus-lg"></i> Add New</a>
+    <h2>All Visitor Records</h2>
+    <a href="{{ url_for('add_visitor') }}" class="btn btn-primary">
+        <i class="bi bi-plus-lg"></i> Add New
+    </a>
 </div>
+
+<!-- Flash messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
 
 <table class="table table-hover table-bordered shadow-sm">
     <thead class="table-dark">
         <tr>
             <th>#</th>
-            <th>Visitor Name</th>
+            <th>Visitor</th>
             <th>Visiting</th>
             <th>Room</th>
+            <th>Purpose</th>
             <th>In Time</th>
-            <th>Out Time</th>
             <th>Status</th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>
         {% for visitor in visitors %}
         <tr>
-            <td>{{ visitor.id }}</td>
-            <td>{{ visitor.visitor_name }}</td>
-            <td>{{ visitor.student_name }}</td>
-            <td><span class="badge bg-primary">{{ visitor.room_number }}</span></td>
-            <td>{{ visitor.check_in }}</td>
-            <td>Still Inside</td>
-            <td><span class="badge bg-success">{{ visitor.status }}</span></td>
+            <td>{{ loop.index }}</td>
+            <td>{{ visitor['visitor_name'] }}</td>
+            <td>{{ visitor['student_name'] }}</td>
+            <td>{{ visitor['room_number'] }}</td>
+            <td>{{ visitor['purpose'] }}</td>
+            <td>{{ visitor['in_time'] }}</td>
+            <td>
+                <span class="badge {% if visitor['status'] == 'Inside' %}bg-success{% else %}bg-secondary{% endif %}">
+                    {{ visitor['status'] }}
+                </span>
+            </td>
+            <td>
+                <!-- View Button -->
+                <a href="{{ url_for('details', id=visitor['id']) }}" 
+                   class="btn btn-sm btn-info me-1" title="View Details">
+                    <i class="bi bi-eye"></i>
+                </a>
+                
+                <!-- Checkout Button - Only for Inside visitors -->
+                {% if visitor['status'] == 'Inside' %}
+                    <a href="{{ url_for('checkout_visitor', id=visitor['id']) }}" 
+                       class="btn btn-sm btn-warning me-1" title="Checkout"
+                       onclick="return confirm('Checkout {{ visitor['visitor_name'] }}?')">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </a>
+                {% endif %}
+                
+                <!-- Delete Button - POST form -->
+                <form action="{{ url_for('delete_visitor', id=visitor['id']) }}" 
+                      method="POST" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-danger" title="Delete"
+                            onclick="return confirm('Delete {{ visitor['visitor_name'] }}? This cannot be undone.')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="8" class="text-center text-muted">No visitors found</td>
         </tr>
         {% endfor %}
     </tbody>

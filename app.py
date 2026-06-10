@@ -1,52 +1,73 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
-from datetime import datetime
+from flask import Flask, redirect, render_template, request, url_for, flash
 import sqlite3
+from datetime import datetime
+from database import get_db, init_db
 
 app = Flask(__name__)
-app.secret_key = 'hostel-visitor-secret-key'
-
-def get_db():
-    conn = sqlite3.connect('hostel.db')
-    conn.row_factory = sqlite3.Row
-    return conn
-
-def init_db():
-    conn = get_db()
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS
-        visitors (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            visitor_name TEXT NOT NULL,
-            student_name TEXT NOT NULL,
-            room_number TEXT NOT NULL,
-            purpose TEXT NOT NULL,
-            check_in TEXT NOT NULL,
-            status TEXT DEFAULT 'Inside'
-        )
-    ''')
-    conn.commit()
-    conn.close()
-
-init_db()
+app.secret_key = "hostel-visitor-2026"
 
 @app.route('/')
 def home():
     conn = get_db()
-    today = datetime.now().strftime("%Y-%m-%d")
-    total = conn.execute("SELECT COUNT(*) FROM visitors WHERE check_in LIKE?", (today+'%',)).fetchone()[0]
-    inside = conn.execute("SELECT COUNT(*) FROM visitors WHERE status = 'Inside'").fetchone()[0]
+    visitors = conn.execute('SELECT * FROM visitors').fetchall()
     conn.close()
+    
+    total = len(visitors)
+    inside = len([v for v in visitors if v['status'] == 'Inside'])
     return render_template('home.html', total=total, inside=inside)
 
 @app.route('/records')
-def records():
+def records_page():
     conn = get_db()
-    visitors = conn.execute('SELECT * FROM visitors ORDER BY id ASC').fetchall()
+    visitors = conn.execute('SELECT * FROM visitors ORDER BY id DESC').fetchall()
     conn.close()
     return render_template('records.html', visitors=visitors)
 
-@app.route('/add', methods=['GET', 'POST'])
-def add():
+@app.route('/details/<int:id>')
+def details(id):
+    conn = get_db()
+    visitor = conn.execute('SELECT * FROM visitors WHERE id = ?', (id,)).fetchone()
+    conn.close()
+    
+    if visitor is None:
+        flash('Visitor not found', 'danger')
+        return redirect(url_for('records_page'))
+    
+    return render_template('details.html', visitor=visitor)
+
+@app.route('/delete/<int:id>', methods=['POST'])
+def delete_visitor(id):
+    conn = get_db()
+    
+    print(f"Someone clicked delete for ID: {id}")  # Step 1
+    
+    cursor = conn.execute('DELETE FROM visitors WHERE id = ?', (id,))
+    conn.commit()
+    
+    print(f"Deleted. Rows affected: {cursor.rowcount}")  # Step 2
+    
+    conn.close()
+    flash('Visitor deleted successfully', 'success')
+    return redirect(url_for('records_page'))
+
+@app.route('/checkout/<int:id>')  # <-- NAYA ROUTE
+def checkout_visitor(id):
+    conn = get_db()
+    out_time = datetime.now().strftime('%d-%m-%Y %I:%M %p')
+    cursor = conn.execute('UPDATE visitors SET out_time = ?, status = ? WHERE id = ?', 
+                         (out_time, 'Outside', id))
+    conn.commit()
+    
+    if cursor.rowcount == 0:
+        flash('Visitor not found', 'danger')
+    else:
+        flash('Visitor checked out successfully', 'success')
+    
+    conn.close()
+    return redirect(url_for('records_page'))
+
+@app.route('/add_visitor', methods=['GET', 'POST'])
+def add_visitor():
     if request.method == 'POST':
         visitor_name = request.form['visitor_name']
         student_name = request.form['student_name']
@@ -54,25 +75,26 @@ def add():
         purpose = request.form['purpose']
         
         if not visitor_name or not student_name or not room_number or not purpose:
-            flash('All fields are required!', 'danger')
+            flash('Please complete all fields', 'danger')
             return render_template('add.html')
         
+        in_time = datetime.now().strftime('%d-%m-%Y %I:%M %p')
+        
         conn = get_db()
-        conn.execute(
-            'INSERT INTO visitors (visitor_name, student_name, room_number, purpose, check_in) VALUES (?,?,?,?,?)',
-            (visitor_name, student_name, room_number, purpose, datetime.now().strftime("%Y-%m-%d %H:%M"))
-        )
+        conn.execute('''INSERT INTO visitors 
+                     (visitor_name, student_name, room_number, purpose, in_time) 
+                     VALUES (?, ?, ?, ?, ?)''',
+                     (visitor_name, student_name, room_number, purpose, in_time))
         conn.commit()
         conn.close()
         
-        flash('Visitor added successfully!', 'success')
-        return redirect(url_for('records'))
+        print(f"Received new visitor: {visitor_name} for {student_name}")
+        
+        flash(f'Visitor {visitor_name} added successfully!', 'success')
+        return redirect(url_for('records_page'))
     
     return render_template('add.html')
 
-@app.route('/about')
-def about():
-    return render_template('about.html')
-
 if __name__ == '__main__':
+    init_db()
     app.run(debug=True)

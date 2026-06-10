@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Visitor Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Visitor Details - ID: {{ visitor['id'] }}</h2>
+        <a href="{{ url_for('records_page') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body">
+            <table class="table table-borderless">
+                <tr>
+                    <th width="200">Visitor Name:</th>
+                    <td>{{ visitor['visitor_name'] }}</td>
+                </tr>
+                <tr>
+                    <th>Visiting Student:</th>
+                    <td>{{ visitor['student_name'] }}</td>
+                </tr>
+                <tr>
+                    <th>Room Number:</th>
+                    <td>{{ visitor['room_number'] }}</td>
+                </tr>
+                <tr>
+                    <th>Purpose:</th>
+                    <td>{{ visitor['purpose'] }}</td>
+                </tr>
+                <tr>
+                    <th>In Time:</th>
+                    <td>{{ visitor['in_time'] }}</td>
+                </tr>
+                <tr>
+                    <th>Out Time:</th>
+                    <td>{{ visitor['out_time'] }}</td>
+                </tr>
+                <tr>
+                    <th>Status:</th>
+                    <td>
+                        <span class="badge {% if visitor['status'] == 'Inside' %}bg-success{% else %}bg-secondary{% endif %}">
+                            {{ visitor['status'] }}
+                        </span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="card-footer">
+            {% if visitor['status'] == 'Inside' %}
+            <a href="{{ url_for('checkout_visitor', id=visitor['id']) }}" class="btn btn-warning">
+                <i class="bi bi-box-arrow-right"></i> Checkout
+            </a>
+            {% endif %}
+            
+            <form action="{{ url_for('delete_visitor', id=visitor['id']) }}" method="POST" style="display:inline;">
+                <button type="submit" class="btn btn-danger" 
+                        onclick="return confirm('Delete this record?')">
+                    <i class="bi bi-trash"></i> Delete
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

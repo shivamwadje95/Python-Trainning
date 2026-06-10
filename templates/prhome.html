@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Practice Home</title>
+</head>
+<body>
+    <h1>Practice Tasks</h1>
+    <a href="/add">Add New Task</a>
+    <br><br>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Task</th>
+            <th>Time</th>
+        </tr>
+        {% for t in tasks %}
+        <tr>
+            <td>{{ t['id'] }}</td>
+            <td>{{ t['name'] }}</td>
+            <td>{{ t['task'] }}</td>
+            <td>{{ t['created_at'] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

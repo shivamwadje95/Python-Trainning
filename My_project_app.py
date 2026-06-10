@@ -97,7 +97,7 @@ def records():
     html += "</table><br><a href='/'>Back to Home</a>"
     return html
 
-# Route 3 - Extra Project Route
+# Route 3 -  Project Route
 @app.route("/inside")
 def inside():
     html = """
