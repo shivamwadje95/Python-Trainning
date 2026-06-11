@@ -39,18 +39,50 @@ def details(id):
 def delete_visitor(id):
     conn = get_db()
     
-    print(f"Someone clicked delete for ID: {id}")  # Step 1
+    print(f"Someone clicked delete for ID: {id}")  
     
     cursor = conn.execute('DELETE FROM visitors WHERE id = ?', (id,))
     conn.commit()
     
-    print(f"Deleted. Rows affected: {cursor.rowcount}")  # Step 2
+    print(f"Deleted. Rows affected: {cursor.rowcount}")
     
     conn.close()
     flash('Visitor deleted successfully', 'success')
     return redirect(url_for('records_page'))
+@app.route('/edit/<int:id>', methods=['GET', 'POST'])
+def edit_visitor(id):
+    conn = get_db()
+    
+    if request.method == 'POST':
+        # Get updated data from form
+        visiting = request.form['visiting']
+        room = request.form['room']
+        purpose = request.form['purpose']
+        in_time = request.form['in_time']
+        status = request.form['status']
+        
+        conn.execute('''UPDATE visitors SET 
+                        visiting = ?, room = ?, purpose = ?, 
+                        in_time = ?, status = ? 
+                        WHERE id = ?''', 
+                     (visiting, room, purpose, in_time, status, id))
+        conn.commit()
+        conn.close()
+        
+        flash('Visitor updated successfully', 'success')
+        return redirect(url_for('records_page'))
+    
+    # GET request: fetch data and show edit form
+    visitor = conn.execute('SELECT * FROM visitors WHERE id = ?', (id,)).fetchone()
+    conn.close()
+    
+    if visitor is None:
+        flash('Visitor not found', 'danger')
+        return redirect(url_for('records_page'))
+        
+    return render_template('edit.html', visitor=visitor)
 
-@app.route('/checkout/<int:id>')  # <-- NAYA ROUTE
+@app.route('/checkout/<int:id>')  
 def checkout_visitor(id):
     conn = get_db()
     out_time = datetime.now().strftime('%d-%m-%Y %I:%M %p')

@@ -22,64 +22,59 @@
     {% endif %}
 {% endwith %}
 
-<table class="table table-hover table-bordered shadow-sm">
-    <thead class="table-dark">
-        <tr>
-            <th>#</th>
-            <th>Visitor</th>
-            <th>Visiting</th>
-            <th>Room</th>
-            <th>Purpose</th>
-            <th>In Time</th>
-            <th>Status</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for visitor in visitors %}
-        <tr>
-            <td>{{ loop.index }}</td>
-            <td>{{ visitor['visitor_name'] }}</td>
-            <td>{{ visitor['student_name'] }}</td>
-            <td>{{ visitor['room_number'] }}</td>
-            <td>{{ visitor['purpose'] }}</td>
-            <td>{{ visitor['in_time'] }}</td>
-            <td>
-                <span class="badge {% if visitor['status'] == 'Inside' %}bg-success{% else %}bg-secondary{% endif %}">
-                    {{ visitor['status'] }}
-                </span>
-            </td>
-            <td>
-                <!-- View Button -->
-                <a href="{{ url_for('details', id=visitor['id']) }}" 
-                   class="btn btn-sm btn-info me-1" title="View Details">
-                    <i class="bi bi-eye"></i>
-                </a>
-                
-                <!-- Checkout Button - Only for Inside visitors -->
-                {% if visitor['status'] == 'Inside' %}
-                    <a href="{{ url_for('checkout_visitor', id=visitor['id']) }}" 
-                       class="btn btn-sm btn-warning me-1" title="Checkout"
-                       onclick="return confirm('Checkout {{ visitor['visitor_name'] }}?')">
-                        <i class="bi bi-box-arrow-right"></i>
+<div class="table-responsive">
+    <table class="table table-hover table-bordered shadow-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Visiting</th>
+                <th>Room</th>
+                <th>Purpose</th>
+                <th>In Time</th>
+                <th>Out Time</th>
+                <th>Status</th>
+                <th width="380px" class="text-center">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for visitor in visitors %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ visitor.visitor_name }}</td>
+                <td>{{ visitor.room_number }}</td>
+                <td>{{ visitor.purpose }}</td>
+                <td>{{ visitor.in_time }}</td>
+                <td>{{ visitor.out_time or '-' }}</td>
+                <td>
+                    <span class="badge {% if visitor.status == 'Inside' %}bg-success{% else %}bg-secondary{% endif %}">
+                        {{ visitor.status }}
+                    </span>
+                </td>
+                <td class="text-center" style="white-space: nowrap;">
+                    <a href="{{ url_for('details', id=visitor.id) }}" 
+                       class="btn btn-sm btn-info me-1">
+                        <i class="fa fa-eye"></i> View
                     </a>
-                {% endif %}
-                
-                <!-- Delete Button - POST form -->
-                <form action="{{ url_for('delete_visitor', id=visitor['id']) }}" 
-                      method="POST" style="display:inline;">
-                    <button type="submit" class="btn btn-sm btn-danger" title="Delete"
-                            onclick="return confirm('Delete {{ visitor['visitor_name'] }}? This cannot be undone.')">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </form>
-            </td>
-        </tr>
-        {% else %}
-        <tr>
-            <td colspan="8" class="text-center text-muted">No visitors found</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+                    <a href="{{ url_for('edit_visitor', id=visitor.id) }}" 
+                       class="btn btn-sm btn-warning me-1">
+                        <i class="fa fa-pencil"></i> Edit
+                    </a>
+                    <a href="{{ url_for('checkout_visitor', id=visitor.id) }}" 
+                       class="btn btn-sm btn-success me-1"
+                       onclick="return confirm('Checkout {{ visitor.visitor_name }}?')">
+                        <i class="fa fa-sign-out"></i> Checkout
+                    </a>
+                    <form action="{{ url_for('delete_visitor', id=visitor.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-danger"
+                                onclick="return confirm('Delete {{ visitor.visitor_name }}? This cannot be undone.')">
+                            <i class="fa fa-trash"></i> Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
 {% endblock %}
