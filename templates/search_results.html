@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h3>Search Results for "{{ query }}"</h3>
+  
+  {% if results %}
+    <div class="alert alert-info">Found {{ results|length }} result(s)</div>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Visitor Name</th>
+          <th>Student Name</th>
+          <th>Room</th>
+          <th>Purpose</th>
+          <th>In Time</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in results %}
+        <tr>
+          <td>{{ v['id'] }}</td>
+          <td>{{ v['visitor_name'] }}</td>
+          <td>{{ v['student_name'] }}</td>
+          <td>{{ v['room_number'] }}</td>
+          <td>{{ v['purpose'] }}</td>
+          <td>{{ v['in_time'] }}</td>
+          <td>
+            {% if v['status'] == 'Inside' %}
+              <span class="badge bg-success">Inside</span>
+            {% else %}
+              <span class="badge bg-secondary">Left</span>
+            {% endif %}
+          </td>
+          <td>
+            <a href="{{ url_for('details', id=v['id']) }}" class="btn btn-sm btn-info">View</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="alert alert-warning">No results found for "{{ query }}"</div>
+  {% endif %}
+  
+  <a href="{{ url_for('records_page') }}" class="btn btn-secondary">Back to All Records</a>
+</div>
+{% endblock %}
