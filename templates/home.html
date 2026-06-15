@@ -1,83 +1,122 @@
 {% extends 'base.html' %}
+{% block title %}Home — Hostel Visitor Log{% endblock %}
 
 {% block content %}
-<h2 class="mb-4"><i class="bi bi-speedometer2"></i> Hostel Visitor Log Dashboard</h2>
 
-  <div class="row">
-    
-    <!-- col-md-8: Table yahan -->
-    <div class="col-md-8 mb-3">
-      <div class="card shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">Recent Visitor Records</h5>
-          <a href="/add_visitor" class="btn btn-primary btn-sm">+ Add New</a>
+<!-- Hero Section -->
+<div class="hero-section p-5 mb-4">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1 class="display-5 fw-bold mb-2">
+                Hostel Visitor Log 🏠
+            </h1>
+            <p class="fs-5 opacity-75 mb-3">
+                Track and manage all hostel visitors in real-time.
+            </p>
+            <a href="{{ url_for('records_page') }}"
+               class="btn btn-light btn-lg px-4 me-2">
+                View Records →
+            </a>
+            <a href="{{ url_for('add_visitor') }}"
+               class="btn btn-outline-light btn-lg px-4">
+                Add Visitor
+            </a>
         </div>
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-hover">
-              <thead class="table-dark">
-                <tr>
-                  <th>#</th>
-                  <th>Visiting</th>
-                  <th>Room</th>
-                  <th>Purpose</th>
-                  <th>In Time</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for visitor in recent_visitors %}
-                <tr>
-                  <td>{{ loop.index }}</td>
-                  <td>{{ visitor.name }}</td>
-                  <td>{{ visitor.room }}</td>
-                  <td>{{ visitor.purpose }}</td>
-                  <td>{{ visitor.checkin_time.strftime('%d-%m-%Y %I:%M %p') }}</td>
-                  <td>
-                    {% if visitor.checkout_time %}
-                      <span class="badge bg-secondary">Out</span>
-                    {% else %}
-                      <span class="badge bg-success">Inside</span>
-                    {% endif %}
-                  </td>
-                  <td>
-                    <a href="/checkout/{{ visitor.id }}" class="btn btn-warning btn-sm">Checkout</a>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-          <a href="/records" class="btn btn-outline-primary btn-sm mt-2">View All Records</a>
+        <div class="col-md-4 text-center d-none d-md-block">
+            <span style="font-size: 120px;">🏨</span>
         </div>
-      </div>
     </div>
-
-    <!-- col-md-4: Stats card yahan -->
-    <div class="col-md-4 mb-3">
-      <!-- Stat 1 -->
-      <div class="card text-center p-3 shadow-sm mb-3">
-        <i class="bi bi-people-fill fs-2 text-primary"></i>
-        <h2 class="mt-2">{{ total_today }}</h2>
-        <p class="mb-0 text-muted">Visitors Today</p>
-      </div>
-      
-      <!-- Stat 2 -->
-      <div class="card text-center p-3 shadow-sm mb-3">
-        <i class="bi bi-person-check-fill fs-2 text-danger"></i>
-        <h2 class="mt-2">{{ currently_inside }}</h2>
-        <p class="mb-0 text-muted">Currently Inside</p>
-      </div>
-      
-      <!-- Stat 3 -->
-      <div class="card text-center p-3 shadow-sm">
-        <i class="bi bi-calendar-month fs-2 text-info"></i>
-        <h2 class="mt-2">{{ total_month }}</h2>
-        <p class="mb-0 text-muted">This Month</p>
-      </div>
-    </div>
-
-  </div>
 </div>
-{% endblock %}
+
+<!-- Stats Row -->
+<div class="row mb-4">
+    <div class="col-md-4 mb-3">
+        <div class="card stat-card p-3 bg-primary bg-opacity-10">
+            <div class="d-flex align-items-center">
+                <span style="font-size:40px;">👥</span>
+                <div class="ms-3">
+                    <h2 class="fw-bold text-primary mb-0">{{ visitors|length }}</h2>
+                    <p class="text-muted mb-0">Total Visitors</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card stat-card p-3 bg-success bg-opacity-10">
+            <div class="d-flex align-items-center">
+                <span style="font-size:40px;">✅</span>
+                <div class="ms-3">
+                    {% set inside = visitors|selectattr('status','equalto','Inside')|list %}
+                    <h2 class="fw-bold text-success mb-0">{{ inside|length }}</h2>
+                    <p class="text-muted mb-0">Currently Inside</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card stat-card p-3 bg-secondary bg-opacity-10">
+            <div class="d-flex align-items-center">
+                <span style="font-size:40px;">🚪</span>
+                <div class="ms-3">
+                    {% set checked_out = visitors|selectattr('status','equalto','Checked Out')|list %}
+                    <h2 class="fw-bold text-secondary mb-0">{{ checked_out|length }}</h2>
+                    <p class="text-muted mb-0">Checked Out</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Section heading -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="fw-bold mb-0">Recent Visitors</h4>
+    <a href="{{ url_for('records_page') }}"
+       class="btn btn-sm btn-outline-primary">
+        View All →
+    </a>
+</div>
+
+<!-- Visitor Cards -->
+<div class="row">
+    {% for visitor in visitors[:8] %}
+    <div class="col-12 col-md-6 col-lg-3 mb-3">
+        <div class="card student-card h-100">
+            <div class="card-header py-2"
+                 style="background-color: #1e3a5f; color:white;">
+                <small class="fw-bold">Room: {{ visitor['room_number'] }}</small>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title fw-bold">{{ visitor['visitor_name'] }}</h5>
+                <p class="card-text text-muted small mb-1">
+                    <strong>Visiting:</strong> {{ visitor['student_name'] }}
+                </p>
+                <p class="card-text text-muted small mb-1">
+                    <strong>Purpose:</strong> {{ visitor['purpose'] }}
+                </p>
+                <p class="card-text text-muted small mb-2">
+                    <strong>In Time:</strong> {{ visitor['in_time'] }}
+                </p>
+                {% if visitor['status'] == 'Inside' %}
+                    <span class="badge bg-success">🟢 Inside</span>
+                {% else %}
+                    <span class="badge bg-secondary">⚪ Checked Out</span>
+                {% endif %}
+            </div>
+            <div class="card-footer bg-transparent">
+                <a href="{{ url_for('details', id=visitor['id']) }}" 
+                   class="btn btn-sm btn-outline-primary w-100">View Details</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if not visitors %}
+<div class="alert alert-info mt-4" role="alert">
+    No visitors logged yet. <a href="{{ url_for('add_visitor') }}">Add the first visitor</a>
+</div>
+{% endif %}
+
+{% endblock %} please make this little bit simple

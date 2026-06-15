@@ -3,58 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hostel Visitor Log</title>
+    <title>{% block title %}Hostel Visitor Log{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    <!-- Custom brand color -->
     <style>
-        body { background-color: #f8f9fa; }
-       .navbar-brand { font-weight: 600; }
+        :root {
+            --brand: #1e3a5f;
+        }
+        body { 
+            background-color: #f8f9fa; 
+        }
+        .navbar {
+            min-height: 60px;
+            background-color: var(--brand);
+        }
+        .navbar-brand { 
+            font-weight: 600; 
+        }
+        .btn-brand {
+            background-color: var(--brand);
+            color: white;
+            border: none;
+        }
+        .btn-brand:hover { 
+            background-color: #162d4a; 
+            color: white; 
+        }
+        .hero-section {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d6a9f 100%);
+            color: white;
+            border-radius: 12px;
+        }
+        .nav-link {
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+        }
+        .badge {
+            font-size: 0.8rem;
+        }
     </style>
 </head>
-<body>
-    <nav class="navbar navbar-dark bg-dark navbar-expand-lg">
-    <div class="container">
-        <a class="navbar-brand" href="/"><i class="bi bi-building"></i> Hostel Visitor Log</a>
-        <div class="navbar-nav ms-auto">
-            <a class="nav-link" href="/"><i class="bi bi-house"></i> Home</a>
-            <a class="nav-link" href="/records"><i class="bi bi-table"></i> Records</a>
-            <a class="nav-link" href="/add_visitor"><i class="bi bi-person-plus"></i> Add_visitor</a>
-            <a class="nav-link" href="/about"><i class="bi bi-info-circle"></i> About</a>
-            
-            <!-- Your search form - added here -->
-            <form class="d-flex ms-3" action="{{ url_for('search') }}" method="GET">
-                <input class="form-control form-control-sm me-2" 
-                       style="width:130px; height:35px" 
-                       type="search" 
-                       placeholder="Search" 
-                       name="q"
-                       value="{{ request.args.get('q', '') }}">
-                <button class="btn btn-outline-light btn-sm" 
-                        style="width:100px; height:35px" 
-                        type="submit">Search</button>
-            </form>
-        </div>
-    </div>
-</nav>
-    <div class="container mt-4">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show">
-                        <i class="bi bi-check-circle-fill"></i> {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        
-        {% block content %}{% endblock %}
-    </div>
+<body class="bg-light">
 
-    <footer class="bg-dark text-white text-center py-3 mt-5">
-        <p class="mb-0">&copy; 2026 Hostel Visitor Log System</p>
-    </footer>
+    <!-- Professional Navbar -->
+    <nav class="navbar navbar-expand navbar-dark shadow-sm">
+        <div class="container justify-content-center">
+
+            <!-- Brand / Logo -->
+            <a class="navbar-brand fw-bold fs-5 me-3" href="{{ url_for('home') }}">
+                🏨 Hostel Visitor Log
+            </a>
+
+            <!-- Nav links -->
+            <div class="navbar-nav">
+                <a class="nav-link px-2 py-1" href="{{ url_for('home') }}">
+                    <i class="bi bi-house"></i> Home
+                </a>
+                <a class="nav-link px-2 py-1" href="{{ url_for('records_page') }}">
+                    <i class="bi bi-table"></i> Records
+                </a>
+                <a class="nav-link px-2 py-1" href="{{ url_for('add_visitor') }}">
+                    <i class="bi bi-person-plus"></i> Add Visitor
+                </a>
+                <a class="nav-link px-2 py-1" href="{{ url_for('about') }}">
+                    <i class="bi bi-info-circle"></i> About
+                </a>
+
+                <!-- Filter Dropdown -->
+                <div class="dropdown ms-2">
+                    <button class="btn btn-outline-warning btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-funnel"></i> Filter
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><h6 class="dropdown-header">By Room</h6></li>
+                        {% for r in rooms %}
+                        <li><a class="dropdown-item" href="{{ url_for('records_page', room=r['room_number']) }}">{{ r['room_number'] }}</a></li>
+                        {% endfor %}
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{{ url_for('records_page', status='Inside') }}">Inside Only</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('records_page') }}">Clear Filter</a></li>
+                    </ul>
+                </div>
+
+                <!-- Search form -->
+                <form class="d-flex ms-3" action="{{ url_for('search') }}" method="GET">
+                    <input class="form-control form-control-sm me-2" 
+                           style="width:130px" 
+                           type="search" 
+                           placeholder="Search" 
+                           name="q" 
+                           value="{{ request.args.get('q', '') }}">
+                    <button class="btn btn-outline-light btn-sm" type="submit">Search</button>
+                </form>
+            </div>
+
+        </div>
+    </nav>
+
+<div class="container mt-4 mb-5">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill"></i> {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
     
+    <!-- Page content -->
+    {% block content %}
+    {% endblock %}
+</div>
+
+    <!-- Professional Footer -->
+    <footer style="background-color: var(--brand);" class="text-white text-center py-3 mt-5">
+        <small>
+            🏨 Hostel Visitor Log System &nbsp;|&nbsp;
+            Built with Python + Flask + Bootstrap &nbsp;|&nbsp;
+            © 2026
+        </small>
+    </footer>
+
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

@@ -13,20 +13,53 @@ def get_db():
 @app.route('/')
 def home():
     conn = get_db()
-    visitors = conn.execute('SELECT * FROM visitors').fetchall()
+    visitors = conn.execute("SELECT * FROM visitors ORDER BY id DESC").fetchall()
+    
+    rooms = conn.execute("SELECT DISTINCT room_number FROM visitors ORDER BY room_number").fetchall()
+    
     conn.close()
-
-    total = len(visitors)
-    inside = len([v for v in visitors if v['status'] == 'Inside'])
-    return render_template('home.html', total=total, inside=inside)
+    
+    total_count = len(visitors)
+    inside_count = 0
+    checkout_count = 0
+    
+    for v in visitors:
+        if v['status'] == 'Inside':
+            inside_count += 1
+        else:
+            checkout_count += 1
+    
+    return render_template('home.html', 
+                         visitors=visitors,
+                         total_count=total_count,
+                         inside_count=inside_count,
+                         checkout_count=checkout_count,
+                         rooms=rooms)  
 
 @app.route('/records')
 def records_page():
+    room = request.args.get('room')
+    status = request.args.get('status')
+    q = request.args.get('q')
+    
     conn = get_db()
-    visitors = conn.execute('SELECT * FROM visitors ORDER BY id DESC').fetchall()
+    query = "SELECT * FROM visitors WHERE 1=1"
+    params = []
+    
+    if room:
+        query += " AND room_number = ?"
+        params.append(room)
+    if status:
+        query += " AND status = ?"
+        params.append(status)
+    if q:
+        query += " AND name LIKE ?"
+        params.append(f"%{q}%")
+    
+    query += " ORDER BY id DESC"
+    visitors = conn.execute(query, params).fetchall()
     conn.close()
     return render_template('records.html', visitors=visitors)
-
 @app.route('/details/<int:id>')
 def details(id):
     conn = get_db()
@@ -125,30 +158,59 @@ def checkout_visitor(id):
     
     conn.close()
     return redirect(url_for('records_page'))
-
+@app.route('/filter')
+def filter_visitors():
+    room = request.args.get('room')
+    purpose = request.args.get('purpose') 
+    status = request.args.get('status')
+    
+    conn = get_db()
+    query = "SELECT * FROM visitors WHERE 1=1"
+    params = []
+    
+    if room:
+        query += ' AND room_number = ?'
+        params.append(room)
+    if purpose:
+        query += ' AND purpose = ?'
+        params.append(purpose)
+    if status:
+        query += ' AND status = ?'
+        params.append(status)
+        
+    query += " ORDER BY id DESC"
+    visitors = conn.execute(query, params).fetchall()
+    conn.close()
+    
+    return render_template('filter.html', 
+                         visitors=visitors, 
+                         selected_room=room, 
+                         selected_purpose=purpose, 
+                         selected_status=status)
 @app.route('/search')
 def search():
-    query = request.args.get('q', '').strip()
-    results = []
-
-    if query:
-        conn = get_db()
-        search_term = f'%{query}%'
-        results = conn.execute("""
+    q = request.args.get('q', '')
+    conn = get_db()
+    if q:
+        search_term = f'%{q}%'
+        visitors = conn.execute("""
             SELECT * FROM visitors 
-            WHERE visitor_name LIKE ? 
-               OR student_name LIKE ? 
-               OR room_number LIKE ? 
-               OR purpose LIKE ?
+            WHERE visitor_name LIKE ? OR room_number LIKE ? OR purpose LIKE ? OR student_name LIKE ?
             ORDER BY id DESC
         """, (search_term, search_term, search_term, search_term)).fetchall()
-        conn.close()
-
-    return render_template('search_results.html', results=results, query=query)
+    else:
+        visitors = conn.execute("SELECT * FROM visitors ORDER BY id DESC").fetchall()
+    conn.close()
+    return render_template('records.html', visitors=visitors)
 
 @app.route('/about')
 def about():
     return render_template('about.html')
-
+@app.context_processor
+def inject_rooms():
+    conn = get_db()
+    rooms = conn.execute("SELECT DISTINCT room_number FROM visitors ORDER BY room_number").fetchall()
+    conn.close()
+    return dict(rooms=rooms)
 if __name__ == '__main__':
     app.run(debug=True)
