@@ -73,7 +73,7 @@
                 <a class="nav-link px-2 py-1" href="{{ url_for('home') }}">
                     <i class="bi bi-house"></i> Home
                 </a>
-                <a class="nav-link px-2 py-1" href="{{ url_for('records_page') }}">
+                <a class="nav-link px-2 py-1" href="{{ url_for('records') }}">
                     <i class="bi bi-table"></i> Records
                 </a>
                 <a class="nav-link px-2 py-1" href="{{ url_for('add_visitor') }}">
@@ -91,11 +91,11 @@
                     <ul class="dropdown-menu">
                         <li><h6 class="dropdown-header">By Room</h6></li>
                         {% for r in rooms %}
-                        <li><a class="dropdown-item" href="{{ url_for('records_page', room=r['room_number']) }}">{{ r['room_number'] }}</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('records', room=r['room_number']) }}">{{ r['room_number'] }}</a></li>
                         {% endfor %}
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{{ url_for('records_page', status='Inside') }}">Inside Only</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('records_page') }}">Clear Filter</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('records', status='Inside') }}">Inside Only</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('records') }}">Clear Filter</a></li>
                     </ul>
                 </div>
 

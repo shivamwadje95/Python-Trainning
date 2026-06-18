@@ -34,10 +34,9 @@ def home():
                          total_count=total_count,
                          inside_count=inside_count,
                          checkout_count=checkout_count,
-                         rooms=rooms)  
-
+                         rooms=rooms) 
 @app.route('/records')
-def records_page():
+def records():
     room = request.args.get('room')
     status = request.args.get('status')
     q = request.args.get('q')
@@ -68,7 +67,7 @@ def details(id):
 
     if visitor is None:
         flash('Visitor not found', 'danger')
-        return redirect(url_for('records_page'))
+        return redirect(url_for('records'))
 
     return render_template('details.html', visitor=visitor)
 
@@ -95,7 +94,7 @@ def add_visitor():
         conn.close()
 
         flash(f'Visitor {visitor_name} added successfully', 'success')
-        return redirect(url_for('records_page'))
+        return redirect(url_for('records'))
 
     return render_template('add_visitor.html')
 
@@ -107,7 +106,7 @@ def edit_visitor(id):
     if visitor is None:
         conn.close()
         flash('Visitor not found', 'danger')
-        return redirect(url_for('records_page'))
+        return redirect(url_for('records'))
 
     if request.method == 'POST':
         visitor_name = request.form['visitor_name']
@@ -124,7 +123,7 @@ def edit_visitor(id):
         conn.close()
         
         flash('Visitor updated successfully', 'success')
-        return redirect(url_for('records_page'))
+        return redirect(url_for('records'))
     
     conn.close()
     return render_template('edit_visitor.html', visitor=visitor)
@@ -136,7 +135,7 @@ def delete_visitor(id):
     conn.commit()
     conn.close()
     flash('Visitor deleted successfully', 'success')
-    return redirect(url_for('records_page'))
+    return redirect(url_for('records'))
 
 @app.route('/checkout_visitor/<int:id>', methods=['POST'])
 def checkout_visitor(id):
@@ -157,7 +156,7 @@ def checkout_visitor(id):
         flash('Visitor checked out successfully', 'success')
     
     conn.close()
-    return redirect(url_for('records_page'))
+    return redirect(url_for('records'))
 @app.route('/filter')
 def filter_visitors():
     room = request.args.get('room')
