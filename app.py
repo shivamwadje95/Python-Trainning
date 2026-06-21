@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, request, url_for, flash
+from flask import Flask, redirect, render_template, request, url_for, flash, session
 import sqlite3
 from datetime import datetime
 
@@ -34,7 +34,26 @@ def home():
                          total_count=total_count,
                          inside_count=inside_count,
                          checkout_count=checkout_count,
-                         rooms=rooms) 
+                         rooms=rooms,
+                         name=session.get('name')) 
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        if name:
+            session['name'] = name
+            flash(f'Welcome, {name}!', 'success')
+            return redirect(url_for('home'))
+        flash('Please enter a name', 'danger')
+    return render_template('register.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('name', None)
+    flash('Logged out successfully', 'info')
+    return redirect(url_for('home'))
+
 @app.route('/records')
 def records():
     room = request.args.get('room')
@@ -52,13 +71,14 @@ def records():
         query += " AND status = ?"
         params.append(status)
     if q:
-        query += " AND name LIKE ?"
+        query += " AND visitor_name LIKE ?"  # fixed: was 'name'
         params.append(f"%{q}%")
     
     query += " ORDER BY id DESC"
     visitors = conn.execute(query, params).fetchall()
     conn.close()
     return render_template('records.html', visitors=visitors)
+
 @app.route('/details/<int:id>')
 def details(id):
     conn = get_db()
@@ -144,7 +164,7 @@ def checkout_visitor(id):
     
     cursor = conn.execute("""
         UPDATE visitors 
-        SET status = 'Left', out_time = ? 
+        SET status = 'Checked Out', out_time = ? 
         WHERE id = ? AND status = 'Inside'
     """, (out_time, id))
     
@@ -157,6 +177,7 @@ def checkout_visitor(id):
     
     conn.close()
     return redirect(url_for('records'))
+
 @app.route('/filter')
 def filter_visitors():
     room = request.args.get('room')
@@ -186,6 +207,7 @@ def filter_visitors():
                          selected_room=room, 
                          selected_purpose=purpose, 
                          selected_status=status)
+
 @app.route('/search')
 def search():
     q = request.args.get('q', '')
@@ -204,12 +226,14 @@ def search():
 
 @app.route('/about')
 def about():
-    return render_template('about.html')
+    return render_template('about.html', name=session.get('name'))
+
 @app.context_processor
 def inject_rooms():
     conn = get_db()
     rooms = conn.execute("SELECT DISTINCT room_number FROM visitors ORDER BY room_number").fetchall()
     conn.close()
     return dict(rooms=rooms)
+
 if __name__ == '__main__':
     app.run(debug=True)
