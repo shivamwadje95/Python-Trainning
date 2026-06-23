@@ -1,4 +1,5 @@
 import sqlite3
+from werkzeug.security import generate_password_hash
 
 def get_db():
     conn = sqlite3.connect('database.db')
@@ -19,6 +20,16 @@ def init_db():
             status TEXT DEFAULT 'Inside'
         )
     ''')
+    conn.commit()
+    conn.close()
+    conn.execute('''
+                 CREATE TABLE IF NOT EXISTS users (
+                 
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT NOT NULL UNIQUE,
+                    password TEXT NOT NULL
+                 )
+                    ''')
     conn.commit()
     conn.close()
 

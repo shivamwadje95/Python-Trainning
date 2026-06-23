@@ -1,41 +1,22 @@
 {% extends 'base.html' %}
-{% block title %}Register — Hostel Visitor Log{% endblock %}
-
 {% block content %}
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-5">
-
-            {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
-            {% endwith %}
-
             <div class="card shadow-sm">
                 <div class="card-body p-4">
-                    <h4 class="fw-bold mb-3">👋 What's your name?</h4>
-
+                    <h4 class="fw-bold mb-3">Register</h4>
                     <form method="POST" action="{{ url_for('register') }}">
-                        <input type="text"
-                               name="name"
-                               class="form-control mb-3"
-                               placeholder="Write your name here..."
-                               required>
-                        <button type="submit" class="btn btn-dark w-100">
-                            Continue
-                        </button>
+                        <input type="text" name="username" class="form-control mb-2" placeholder="Username">
+                        <input type="password" name="password" class="form-control mb-2" placeholder="Password">
+                        <button type="submit" class="btn btn-dark">Register</button>
                     </form>
-
+                    <p class="text-center mt-3 mb-0">
+                        Already have an account? <a href="{{ url_for('login') }}">Login here</a>
+                    </p>
                 </div>
             </div>
-
-        </div>
+        </div>        
     </div>
 </div>
 {% endblock %}

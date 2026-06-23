@@ -3,46 +3,6 @@
 
 {% block content %}
 
-<!-- Session/Register Block -->
-<div class="container mb-4">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                    {% endwith %}
-
-                    {% if name %}
-                        <h4 class="fw-bold mb-2">Welcome Back, {{ name }}! 👋</h4>
-                        <p class="text-muted mb-3">
-                            You're logged in. Your session is active.
-                        </p>
-                        <a href="{{ url_for('logout') }}" class="btn btn-dark w-100">
-                            Logout
-                        </a>
-                    {% else %}
-                        <h4 class="fw-bold mb-2">No active session</h4>
-                        <p class="text-muted mb-3">
-                            Register or log in to start managing visitor entries.
-                        </p>
-                        <a href="{{ url_for('register') }}" class="btn btn-dark w-100">
-                            Register / Login
-                        </a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Hero Section -->
 <div class="hero-section p-5 mb-4">
     <div class="row align-items-center">
