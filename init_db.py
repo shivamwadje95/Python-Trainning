@@ -4,7 +4,6 @@ from werkzeug.security import generate_password_hash
 conn = sqlite3.connect('database.db')
 cursor = conn.cursor()
 
-# Visitors table
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS visitors (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -18,7 +17,6 @@ CREATE TABLE IF NOT EXISTS visitors (
 )
 ''')
 
-# Users table for login
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -27,10 +25,14 @@ CREATE TABLE IF NOT EXISTS users (
 )
 ''')
 
-# Default admin user - hashed password ke saath
+try:
+    cursor.execute("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'visitor'")
+except sqlite3.OperationalError:
+    pass
+
 hashed_password = generate_password_hash('admin123')
-cursor.execute("DELETE FROM users")  # Purane users hata de
-cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", ('admin', hashed_password))
+cursor.execute("INSERT OR IGNORE INTO users (username, password, role) VALUES (?, ?, ?)", 
+               ('admin', hashed_password, 'admin'))
 
 conn.commit()
 conn.close()

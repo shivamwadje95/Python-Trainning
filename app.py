@@ -7,23 +7,14 @@ from datetime import datetime
 app = Flask(__name__)
 app.secret_key = "hostel-visitor-2026"
 
+
 def get_db():
     conn = sqlite3.connect('database.db')
     conn.row_factory = sqlite3.Row
     return conn
 
-# Login required decorator
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'username' not in session:
-            flash('Please login first', 'warning')
-            return redirect(url_for('login'))
-        return f(*args, **kwargs)
-    return decorated_function
 
 @app.route('/')
-@login_required
 def home():
     conn = get_db()
     visitors = conn.execute("SELECT * FROM visitors ORDER BY id DESC").fetchall()
@@ -42,7 +33,6 @@ def home():
                          rooms=rooms) 
 
 @app.route('/records')
-@login_required
 def records():
     room = request.args.get('room')
     status = request.args.get('status')
@@ -68,7 +58,6 @@ def records():
     return render_template('records.html', visitors=visitors)
 
 @app.route('/details/<int:id>')
-@login_required
 def details(id):
     conn = get_db()
     visitor = conn.execute('SELECT * FROM visitors WHERE id = ?', (id,)).fetchone()
@@ -81,8 +70,10 @@ def details(id):
     return render_template('details.html', visitor=visitor)
 
 @app.route('/add_visitor', methods=['GET', 'POST'])
-@login_required
 def add_visitor():
+    if 'username' not in session:
+            flash('Please login first', 'warning')
+            return redirect(url_for('login'))
     if request.method == 'POST':
         visitor_name = request.form['visitor_name']
         student_name = request.form['student_name']
@@ -109,8 +100,10 @@ def add_visitor():
     return render_template('add_visitor.html')
 
 @app.route('/edit_visitor/<int:id>', methods=['GET', 'POST'])
-@login_required
 def edit_visitor(id):
+    if 'username' not in session:
+            flash('Please login first', 'warning')
+            return redirect(url_for('login'))
     conn = get_db()
     visitor = conn.execute('SELECT * FROM visitors WHERE id = ?', (id,)).fetchone()
     
@@ -140,8 +133,10 @@ def edit_visitor(id):
     return render_template('edit_visitor.html', visitor=visitor)
 
 @app.route('/delete_visitor/<int:id>', methods=['POST'])
-@login_required
 def delete_visitor(id):
+    if 'username' not in session:
+            flash('Please login first', 'warning')
+            return redirect(url_for('login'))
     conn = get_db()
     conn.execute('DELETE FROM visitors WHERE id = ?', (id,))
     conn.commit()
@@ -150,7 +145,6 @@ def delete_visitor(id):
     return redirect(url_for('records'))
 
 @app.route('/checkout_visitor/<int:id>', methods=['POST'])
-@login_required
 def checkout_visitor(id):
     conn = get_db()
     out_time = datetime.now().strftime('%d-%m-%Y %I:%M %p')
@@ -172,7 +166,6 @@ def checkout_visitor(id):
     return redirect(url_for('records'))
 
 @app.route('/filter')
-@login_required
 def filter_page():
     room = request.args.get('room')
     purpose = request.args.get('purpose')
@@ -211,7 +204,6 @@ def filter_page():
     )
 
 @app.route('/search')
-@login_required
 def search():
     q = request.args.get('q', '')
     conn = get_db()
