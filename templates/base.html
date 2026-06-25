@@ -82,11 +82,14 @@
                 <a class="nav-link px-2 py-1" href="{{ url_for('about') }}">
                     <i class="bi bi-info-circle"></i> About
                 </a>
+                {% if session.role == 'admin' %}
 
-                <!-- Filter Button - Now goes to separate page -->
-                <a class="nav-link px-2 py-1 btn btn-outline-warning btn-sm ms-2 text-warning" href="{{ url_for('filter_page') }}">
-                    <i class="bi bi-funnel"></i> Filter
-                </a>
+                    <!-- Filter Button - Now goes to separate page -->
+                    <a class="nav-link px-2 py-1 btn btn-outline-warning btn-sm ms-2 text-warning" href="{{ url_for('filter_page') }}">
+                        <i class="bi bi-funnel"></i> Filter
+                    </a>
+                {% endif %}
+                
 
                 <!-- Search form -->
                 <form class="d-flex ms-3" action="{{ url_for('search') }}" method="GET">

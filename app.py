@@ -71,9 +71,9 @@ def details(id):
 
 @app.route('/add_visitor', methods=['GET', 'POST'])
 def add_visitor():
-    if 'username' not in session:
-            flash('Please login first', 'warning')
-            return redirect(url_for('login'))
+    if session.get('role') != 'admin':
+        flash('You do not have permission to add visitors', 'danger')
+        return redirect(url_for('home'))
     if request.method == 'POST':
         visitor_name = request.form['visitor_name']
         student_name = request.form['student_name']
@@ -101,9 +101,9 @@ def add_visitor():
 
 @app.route('/edit_visitor/<int:id>', methods=['GET', 'POST'])
 def edit_visitor(id):
-    if 'username' not in session:
-            flash('Please login first', 'warning')
-            return redirect(url_for('login'))
+    if session.get('role') != 'admin':
+        flash('You do not have permission to edit visitors', 'danger')
+        return redirect(url_for('home'))
     conn = get_db()
     visitor = conn.execute('SELECT * FROM visitors WHERE id = ?', (id,)).fetchone()
     
@@ -134,9 +134,9 @@ def edit_visitor(id):
 
 @app.route('/delete_visitor/<int:id>', methods=['POST'])
 def delete_visitor(id):
-    if 'username' not in session:
-            flash('Please login first', 'warning')
-            return redirect(url_for('login'))
+    if session.get('role') != 'admin':
+        flash('You do not have permission to delete visitors', 'danger')
+        return redirect(url_for('home'))
     conn = get_db()
     conn.execute('DELETE FROM visitors WHERE id = ?', (id,))
     conn.commit()
@@ -261,6 +261,7 @@ def login():
         
         if user and check_password_hash(user['password'], password):
             session['username'] = username
+            session['role'] = user['role']
             flash(f'Welcome {username}!', 'success')
             return redirect(url_for('home'))
         else:
@@ -270,6 +271,7 @@ def login():
 @app.route('/logout')
 def logout():
     session.pop('username', None)
+    session.pop('role', None)
     flash('You have been logged out.', 'info')
     return redirect(url_for('login'))
 
