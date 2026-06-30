@@ -1,22 +1,25 @@
+import os
 from flask import Flask, redirect, render_template, request, url_for, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import sqlite3
 from datetime import datetime
 from init_db import init_db
-init_db()
+
+# Database path fix
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, 'database.db')
+
+init_db()  
 
 app = Flask(__name__)
 app.secret_key = "hostel-visitor-2026"
-DATABASE = 'database.db'
-
 
 def get_db():
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect(DB_PATH)  
     conn.row_factory = sqlite3.Row
     return conn
-def init_db():
-    conn = get_db()
+
 
 
 @app.route('/')
@@ -246,7 +249,7 @@ def register():
             return render_template('register.html')
         
         hashed = generate_password_hash(password)
-        conn.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, hashed))
+        conn.execute('INSERT INTO users (username, password, role) VALUES (?, ?, ?)', (username, hashed, 'user'))
         conn.commit()
         conn.close()
         flash('Registration successful! Please login.', 'success')
@@ -287,6 +290,6 @@ def page_not_found(e):
 @app.context_processor
 def inject_user():
     return dict(current_user=session.get('username'))
-init_db()
+
 if __name__ == '__main__':
     app.run(debug=True)
