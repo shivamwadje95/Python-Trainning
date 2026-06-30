@@ -3,9 +3,12 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import sqlite3
 from datetime import datetime
+from init_db import init_db
+init_db()
 
 app = Flask(__name__)
 app.secret_key = "hostel-visitor-2026"
+DATABASE = 'database.db'
 
 
 def get_db():
