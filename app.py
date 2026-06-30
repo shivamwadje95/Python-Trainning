@@ -12,6 +12,8 @@ def get_db():
     conn = sqlite3.connect('database.db')
     conn.row_factory = sqlite3.Row
     return conn
+def init_db():
+    conn = get_db()
 
 
 @app.route('/')
@@ -282,6 +284,6 @@ def page_not_found(e):
 @app.context_processor
 def inject_user():
     return dict(current_user=session.get('username'))
-
+init_db()
 if __name__ == '__main__':
     app.run(debug=True)
